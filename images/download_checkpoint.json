@@ -1,0 +1,17 @@
+{
+  "timestamp": 1758878211.4921672,
+  "completed_downloads": 600,
+  "total_results": 600,
+  "stats": {
+    "total": 682,
+    "completed": 600,
+    "failed": 0,
+    "skipped": 0,
+    "processed": 600,
+    "remaining": 82,
+    "success_rate": 100.0,
+    "total_bytes": 40398306,
+    "elapsed_time": 751.4099020957947,
+    "avg_speed": 0.7984989262538466
+  }
+}
