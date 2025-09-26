@@ -17,7 +17,7 @@ GITHUB_RAW_BASE_URL = (
 # Local Paths
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 DOWNLOAD_IMAGES_DIR = PROJECT_ROOT / "crawler" / "download_images"
-IMAGE_MAPPING_CACHE_FILE = DOWNLOAD_IMAGES_DIR / "image_mapping_cache.json"
+IMAGE_MAPPING_CACHE_FILE = PROJECT_ROOT / "crawler" / "url" / "image_mapping_cache.json"
 TEMP_DOWNLOAD_DIR = DOWNLOAD_IMAGES_DIR / "images"
 
 # CloudFront Configuration
@@ -67,17 +67,25 @@ def ensure_directories():
 
 def get_github_image_url(relative_path: str) -> str:
     """
-    Generate GitHub raw URL for an image.
+    Generate GitHub raw URL for an image with proper URL encoding.
 
     Args:
         relative_path: Relative path within the images directory
 
     Returns:
-        Full GitHub raw URL
+        Full GitHub raw URL with proper encoding
     """
+    # Import the URL encoder
+    from crawler.url.url_encoder import create_encoded_github_url
+
     # Clean the path and ensure it doesn't start with /
     clean_path = relative_path.lstrip("/")
-    return f"{GITHUB_RAW_BASE_URL}/{GITHUB_IMAGES_DIR}/{clean_path}"
+
+    # Create the full path within the images directory
+    full_path = f"{GITHUB_IMAGES_DIR}/{clean_path}"
+
+    # Use the URL encoder to create properly encoded URL
+    return create_encoded_github_url(GITHUB_RAW_BASE_URL, full_path)
 
 
 def get_local_image_path(relative_path: str) -> Path:

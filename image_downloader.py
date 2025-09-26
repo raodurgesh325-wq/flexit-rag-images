@@ -218,9 +218,15 @@ class ImageDownloader:
         """
         for attempt in range(max_retries + 1):
             try:
+                # Import URL encoder for proper encoding
+                from crawler.url.url_encoder import safe_encode_url
+
+                # Ensure URL is properly encoded
+                encoded_url = safe_encode_url(url)
+
                 # Validate URL
-                if not validate_url(url):
-                    return False, 0, f"Invalid URL: {url}"
+                if not validate_url(encoded_url):
+                    return False, 0, f"Invalid URL: {encoded_url}"
 
                 # Check if file already exists
                 if local_path.exists():
@@ -242,11 +248,11 @@ class ImageDownloader:
                         REQUEST_TIMEOUT * 1000
                     )  # Convert to milliseconds
 
-                    # Navigate to the image URL
-                    response = await page.goto(url, wait_until="networkidle")
+                    # Navigate to the image URL (use encoded URL)
+                    response = await page.goto(encoded_url, wait_until="networkidle")
 
                     if not response:
-                        return False, 0, f"Failed to get response for {url}"
+                        return False, 0, f"Failed to get response for {encoded_url}"
 
                     if not response.ok:
                         return (

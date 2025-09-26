@@ -5,8 +5,7 @@ Cache Updater module for updating image mapping cache with GitHub URLs.
 
 import json
 import logging
-from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict
 from datetime import datetime
 
 from .config import (
@@ -17,8 +16,7 @@ from .config import (
 )
 from .utils import (
     extract_relative_path_from_url,
-    create_backup_filename,
-    format_file_size,
+    create_backup_filename
 )
 
 # Configure logging
@@ -134,16 +132,19 @@ class CacheUpdater:
         self, enhance_url: str, cloudfront_base: str
     ) -> str:
         """
-        Generate GitHub URL from CloudFront enhance_url.
+        Generate GitHub URL from CloudFront enhance_url with proper URL encoding.
 
         Args:
             enhance_url: Original CloudFront URL
             cloudfront_base: CloudFront base URL to remove
 
         Returns:
-            Corresponding GitHub raw URL
+            Corresponding GitHub raw URL with proper encoding
         """
         try:
+            # Import URL validation
+            from crawler.url.url_encoder import validate_encoded_url
+
             # Extract relative path from CloudFront URL
             relative_path = extract_relative_path_from_url(enhance_url, cloudfront_base)
 
@@ -151,8 +152,12 @@ class CacheUpdater:
                 logger.warning(f"Could not extract relative path from: {enhance_url}")
                 return ""
 
-            # Generate GitHub URL
+            # Generate GitHub URL (now with encoding via updated config)
             github_url = get_github_image_url(relative_path)
+
+            # Validate that the URL is properly encoded
+            if github_url and not validate_encoded_url(github_url):
+                logger.warning(f"Generated URL may have encoding issues: {github_url}")
 
             return github_url
 
